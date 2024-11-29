@@ -1,7 +1,10 @@
 ---
 title: 【学生向け】少年よ、New Relicを抱け
 tags:
-  - "NewRelic オブザーバービリティ 初心者向け 学生"
+  - "オブザーバービリティ"
+  - "NewRelic"
+  - "初心者向け"
+  - "学生"
 private: true
 updated_at: ""
 id: null
