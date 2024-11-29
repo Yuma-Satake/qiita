@@ -10,135 +10,321 @@ slide: false
 ignorePublish: false
 ---
 
-:::note [これは何] まだオブザーバビリティに触れた事の無い学生が、New Relic を使ってみるべき理由を書
-いた記事 :::
+:::note
+[これは何] 
+まだオブザーバビリティに触れた事の無い学生が、New Relic を使ってみるべき理由と、その簡単な実例を紹介します。
+:::
+
+:::note warn
+[注意]
+この記事は、オブザーバビリティやモニタリングを初めて知る/あまり触れたことのない学生向けに書かれています。
+:::
+
+:::note 
+[略語]
+記事中では、`New Relic`を`NR`と略して表記します。
+:::
+
 
 ## 自己紹介
 
 ### Yuma Satake
 
+普段は ~~フロントおじさん~~ Webアプリケーション開発をしている車好きの学生。
+9月に相方のむらさめと、NRUG Nagoya を立ち上げました。
+
 - 名前：佐竹友真
 - 所属：名古屋工学院専門学校(3 年)
-- 所属：NRUG Nagoya 副支部長
 - 領域：Web 開発
 - 趣味：車・旅行
 - Twitter：[Yuma-Satake | Matsuriba🏮](https://x.com/yuma_satake22)
 
  <img width="200px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/aaf685a0-0af0-5e5b-92e9-a6f0275812fc.jpeg">
 
-# 学生よ、New Relic を使え
+なんか一通り書いたら、めちゃくちゃAI生成みたいな文章になってしまった。
 
-皆さんは`New Relic`や`Data Dog`といったツールを
 
-こんにちは、未来のエンジニアの皆さん！ソフトウェア開発の世界に足を踏み入れたばかりのあなたに、今日は
-強力なツール「New Relic」をご紹介します。特に、オブザーバビリティ（可観測性）を学びたい学生にとって
-、New Relic は最適な選択肢です。なぜなら、学生向けの特別プランが用意されており、計装やオブザーバビリ
-ティの学習に最適な環境が整っているからです。では、その理由と始め方について詳しく見ていきましょう。
+## 学生よ、New Relic を使え
+
+`New Relic`や`Data Dog`といったツールを使ったことはありますか？
+これらのツールは、アプリケーションやインフラのログやパフォーマンスを監視する、**オブザーバビリティツール**です。
+
+### 何が嬉しいか
+
+- **エラー時のトレース**
+  エラーが発生した際に、どの処理で、どんな内容でエラーが発生したかをトレースできる
+- **ユーザ体験を可視化**
+  ページロードが遅い・APIエラーが多発してる などユーザーの体験を損ねてる問題を簡単に発見できる
+- **パフォチューのお供**
+  スロークエリや、時間がかかってる処理が可視化できる
+
+このようにオブザーバビリティツールを使うことで、より快適に開発ができるようになります！
+しかし、周囲でこれらのツールを使っている学生を私はほぼ知りません😇
+
+### なぜ学生が触れる機会が少ないか（n=2）
+
+- そもそも運用フェーズを踏まないので、ツールに触れる機会が少ない
+- 利用料が高いイメージがある
+- 導入が難しそうなので、手を出しにくい
+
+ですが、実際に大きな企業の開発現場では、これらのツールが導入されていることが多いです。
+インターン等でなら触れる機会があった...という学生も多いのではないでしょうか？
+
+#### しかし、NRには、開発中も便利に使える機能や、学生向けの無料プランがあります！！
+
+この記事では、そんなNRの登録方法や、Goにおける簡単な導入方法を紹介します。
 
 ## New Relic とは？
 
-まず、New Relic について簡単に説明します。New Relic は、アプリケーションやインフラストラクチャのパフ
-ォーマンスを監視・分析するためのオブザーバビリティプラットフォームです。これにより、システム全体の状
-態をリアルタイムで把握し、問題の早期発見や迅速な対応が可能となります。
+>[NR公式サイトより] 
+New Relic は、モバイルやブラウザのエンドユーザーモニタリングや、外形監視、バックエンドのアプリケーションとインフラモニタリングなど、オンプレやクラウド、コンテナからサーバレスまであらゆるシステム環境での性能管理を実現するプラットフォームです
 
-## 学生向けプランの魅力
+NRとは何か、を一言で説明するのはとても難しいですが、フロント→バックエンド→インフラまで、サービスの全てを可視化する事ができるツール（プラットフォーム）です。
 
-New Relic は、学習意欲の高い学生をサポートするために、特別な学生向けプランを提供しています。このプラ
-ンでは、以下のような特典が含まれています：
+## 学生に優しい New Relic
 
-- **全機能へのアクセス**：30 以上の機能を利用して、アプリケーションとインフラストラクチャをモニター
-  できます。
-- **無料ティアの拡充**：月間 500GB のデータ取り込みと、協働プロジェクトには 3 名のフルプラットフォー
-  ムユーザーが参加可能です。
-- **学生中心のコンテンツ**：最新ニュースやリソースを掲載した学生向けニュースレターを毎月受け取れます
-  。
-- **認定証とトレーニング**：専用トレーニングやワークショップの機会を利用して、New Relic の認定を取得
-  できます。
-- **スポンサーシップの可能性**：開発者コミュニティでリーダーを務める学生をサポートするプログラムを提
-  供します。
-- **スタッフによるサポート**：営業時間内はプラットフォームのデータ理解を助けるセッションが可能です。
+NRは、学生向けの無料プランや、初めてオブザーバビリティを学ぶためのコンテンツを提供しています。
 
-これらの特典により、学生は実践的なスキルを身につけ、将来のキャリアに備えることができます。
+- **学生向け無料プラン**：Github Education 経由で無料で利用できます
+- **全ての機能が使える**：無料プランでも、全ての機能+500GB/月のデータ書き込みが可能
+- **学習コンテンツ**：オブザーバビリティとは？から、実際のアプリケーションに導入する方法まで
+
+https://newrelic.com/jp/students
 
 ## New Relic の始め方
 
-では、具体的に New Relic をどのように始めれば良いのでしょうか？以下のステップで進めてみましょう。
+実際に、Github Student Developer Pack 経由で NR を始める手順を紹介していきます。
 
-### 1. 無料アカウントの作成
+### 1. アカウントの作成
 
-まず、無料の New Relic アカウントを作成します。学生プログラムの特典を利用するには、まず無料の New
-Relic アカウントを作成します。学生ステータスが証明されると、アカウントに追加のデータとユーザーが追加
-され、表示されます。
+まず、正面からアカウントを作成します。
 
-[New Relic アカウントを作成する](https://newrelic.com/jp/students)
+▼ サインアップ
+
+https://newrelic.com/jp/sign-up-japan
+
+一通り入力して、仮登録
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/d72773e7-fea0-2e83-9a69-e28245cf3eb2.png" />
+
+仮登録のメールが届くので、リンクから本登録
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/912d7cc3-6790-e652-11cb-d727f2750138.png" />
+
+今回は後で Github との連携を行うので、GithubのOAuthで登録します
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/141de260-7294-98b3-2b75-686a1b9bd42c.png" />
+
+Githubとの連携画面が出るので許可
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/016c3b6c-f1d8-349c-310a-999a5e1e71a9.png" />
+
+ダッシュボードが表示されれば完了です！
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/a9c17b2b-97f6-7106-9fc6-5aa45f6705ab.png" />
+
 
 ### 2. GitHub Education との連携
 
-次に、GitHub Education と New Relic アカウントを連携します。以下の手順で進めてください：
+次に、GitHub Education と NR を連携し、学生アカウントとして認証します。
 
-1. **GitHub Education で学生ステータスを証明**：まず、GitHub Education で現在の学生ステータスを証明
-   します。これにより、GitHub Student Developer Pack の特典を利用できるようになります。
-2. **New Relic アカウントへの特典追加**：New Relic のプラットフォーム内で
-   、`Help > Resources > New Relic for Students > GitHub Education`に移動し、記載されている手順に従
-   ってアカウントに学生プログラムの特典を追加します。
+#### ① Github アカウントを GitHub Education で認証
 
-これで、New Relic の学生向け特典を利用する準備が整いました。
+まず、Github アカウントを Github Education で学生であることを証明し、GitHub Student Developer Pack の特典を利用できるようにします。
 
-### 3. Go アプリケーションへの New Relic の導入
+:::note warn
+日本語の証明書を使った場合に必要な対応がコロコロ変わるため、完全に保証はできませんが、2024年8月に以下の記事の内容で認証が通りました。
+:::
 
-アカウントの連携が完了したら、次は実際に Go 言語のアプリケーションに New Relic を導入してみましょう
-。以下の手順で進めてください。
+▼ Github Education の申請方法
 
-#### 3.1. New Relic Go エージェントのインストール
+https://qiita.com/Kobayashi2019/items/5adb9bde57691a770419
 
-まず、New Relic の Go エージェントをインストールします。ターミナルで以下のコマンドを実行してください
-。
+#### ② New Relic アカウントへの特典追加
 
-```bash
+[New Relic for Students](https://one.newrelic.com/nr1-core/students-edition/home?account=6216488&state=508da9d2-ca41-3319-c1cc-b5c48783a42f)もしくは
+サイドバーの`Help > Resources > New Relic for Students`を開きます
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/043d65a9-5224-e49a-283f-28c2feae1a79.png" />
+
+`GitHub Education`を選択
+※ DarkThemeだとGithubが闇堕ちして見づらかったのでここだけ、LightTheme
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/e4b9afd7-3b78-2192-4582-d5d0b91e8850.png" />
+
+`Student`を選択し、`Authorize with GitHub`をクリック
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/0bff3b79-4dad-dda7-4414-93127b3a74ed.png" />
+
+Githubとの連携画面が出るので許可
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/05e5c228-763b-db9a-128e-c9bbf749c4f9.png" />
+
+これで、学生アカウントとして認証が完了しました！
+
+
+## Go BE アプリへの New Relic の導入
+
+一通り準備ができたので、以下の公式のDocsを参考に、Goのバックエンドアプリケーションに NR を導入してみます。
+
+▼ [公式]Go アプリへの New Relic の導入
+
+https://docs.newrelic.com/jp/docs/apm/agents/go-agent/installation/install-new-relic-go/
+
+### 環境について
+筆者の環境は以下の通りです。
+使用しているOSや言語バージョンに沿った対応が必要です。
+
+- OS：MacOS Sequoia 15.1.1
+- Go：1.23.1
+
+
+### 1. ライセンスキーの発行
+
+[API KEYの管理画面](https://one.newrelic.com/admin-portal/api-keys/home?account=6216488&state=f658032c-81bc-9d67-94b2-646db8c06606)でライセンスキーを発行します。
+
+右上の`Create a Key`をクリック
+
+それぞれ入力して Key を作成。
+（今回はバックエンドアプリケーションのため、`Key type`に`Ingest - License`を選択）
+
+▼ KEY Typeについてはこちら
+
+https://docs.newrelic.com/docs/apis/intro-apis/new-relic-api-keys/
+
+### 2. 簡単なGoのプロジェクトの作成
+
+#### ① プロジェクトの作成
+
+※`Go`についての記載は本筋ではないため、`Cloud Run`のサンプルを利用します。
+
+▼ クイックスタート: Cloud Run に Go サービスをデプロイする
+
+https://cloud.google.com/run/docs/quickstarts/build-and-deploy/deploy-go-service?hl=ja
+
+テンプレート通り`main.go`を作成
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+)
+
+func main() {
+	log.Print("starting server...")
+	http.HandleFunc("/", handler)
+
+	// Determine port for HTTP service.
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("defaulting to port %s", port)
+	}
+
+	// Start HTTP server.
+	log.Printf("listening on port %s", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	name := os.Getenv("NAME")
+	if name == "" {
+		name = "World"
+	}
+	fmt.Fprintf(w, "Hello %s!\n", name)
+}
+```
+
+#### ② NRの導入
+
+envファイルを作成し、ライセンスキーを設定
+
+```
+NEW_RELIC_LICENSE_KEY=YOUR_LICENSE_KEY
+```
+
+パッケージをインストール
+
+```zsh
 go get github.com/newrelic/go-agent/v3/newrelic
 ```
 
-また、`NEW_RELIC_LICENSE_KEY`という環境変数に、あなたの New Relic ライセンスキーを設定しておく必要が
-あります。
+インストールしたパッケージを`import`するために、`main.go`に以下を追記
 
-#### 3.3. 環境変数の設定
-
-New Relic のライセンスキーを環境変数として設定します。ターミナルで以下のコマンドを実行してください。
-
-```bash
-export NEW_RELIC_LICENSE_KEY=あなたのライセンスキー
+```go
+import "github.com/newrelic/go-agent/v3/newrelic"
 ```
 
-あなたのライセンスキーの部分は、New Relic のアカウントから取得したライセンスキーに置き換えてください
-。
+`main関数`に以下を追記し、NRを初期化
 
-3.4. アプリケーションの実行
+```go
+app, err := newrelic.NewApplication(
+    newrelic.ConfigAppName("go-nr-test-app")
+    newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY"))
+		newrelic.ConfigDistributedTracerEnabled(true),
+)
+if err != nil {
+	log.Fatal(err)
+}
+```
 
-すべての設定が完了したら、アプリケーションをビルドして実行します。ターミナルで以下のコマンドを実行し
-てください。
+NRでラップするため、`handler関数`を以下のように変更
 
-```zsh
-go build -o myapp
-./myapp
+```go
+http.HandleFunc(newrelic.WrapHandleFunc(app, "/", handler))
+```
 
+最終的な`main.go`は以下のようになります
 
-これで、アプリケーションが起動し、New Relicへのデータ送信が開始されます。
+```go
+package main
 
-3.5. New Relicでのデータ確認
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"os"
 
-アプリケーションがNew Relicにデータを送信し始めるまで、数分かかる場合があります。その後、New Relicのダッシュボードにアクセスし、アプリケーションのパフォーマンスデータを確認できます。
+	"github.com/newrelic/go-agent/v3/newrelic"
+)
 
-オブザーバビリティの学習リソース
+func main() {
+	log.Print("starting server...")
+  app, err := newrelic.NewApplication(
+      newrelic.ConfigAppName("go-nr-test-app"),
+      newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")),
+  		newrelic.ConfigDistributedTracerEnabled(true),
+  )
+  if err != nil {
+  	log.Fatal(err)
+  }
 
-New Relicは、オブザーバビリティの学習をサポートするために、多くのリソースを提供しています。例えば：
-	•	オブザーバビリティ入門ガイド：ソフトウェア開発、運用に関わるチームが直面する課題を解決するための新しいアプローチとして、オブザーバビリティを紹介しています。
-	•	New Relic University：New Relicの使い方や機能を学ぶためのオンラインコースやワークショップが用意されています。
-	•	Full-Stack Observabilityテスト：New Relicプラットフォームのオブザーバビリティに関する知識を試すことができるテストです。合格者にはデジタル認定証が提供されます。
+  http.HandleFunc(newrelic.WrapHandleFunc(app, "/", handler))
 
-これらのリソースを活用して、オブザーバビリティの理解を深め、実践的なスキルを身につけましょう。
+	// Determine port for HTTP service.
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("defaulting to port %s", port)
+	}
 
-まとめ
+	// Start HTTP server.
+	log.Printf("listening on port %s", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
+}
 
-New Relicは、学生がオブザーバビリティを学ぶための最適なプラットフォームです。学生向けの特別プランや豊富な学習リソースを活用して、実践的なスキルを身につけ、将来のキャリアに備えましょう。さあ、今すぐNew Relicを始めて、エンジニアとしての一歩を踏み出しましょう！
-
+func handler(w http.ResponseWriter, r *http.Request) {
+	name := os.Getenv("NAME")
+	if name == "" {
+		name = "World"
+	}
+	fmt.Fprintf(w, "Hello %s!\n", name)
+}
 ```
