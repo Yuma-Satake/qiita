@@ -2,7 +2,7 @@
 title: 【学生向け】少年よ、New Relicを抱け
 tags:
   - "NewRelic オブザーバービリティ 初心者向け 学生"
-private: false
+private: true
 updated_at: ""
 id: null
 organization_url_name: null
@@ -37,7 +37,7 @@ ignorePublish: false
 - 所属：名古屋工学院専門学校(3 年)
 - 領域：Web 開発
 - 趣味：車・旅行
-- Twitter：[Yuma-Satake | Matsuriba🏮](https://x.com/yuma_satake22)
+- Twitter：[Yuma Satake | Matsuriba🏮](https://x.com/yuma_satake22)
 
  <img width="200px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/aaf685a0-0af0-5e5b-92e9-a6f0275812fc.jpeg">
 
@@ -171,6 +171,7 @@ Githubとの連携画面が出るので許可
 
 https://docs.newrelic.com/jp/docs/apm/agents/go-agent/installation/install-new-relic-go/
 
+
 ### 環境について
 筆者の環境は以下の通りです。
 使用しているOSや言語バージョンに沿った対応が必要です。
@@ -178,6 +179,9 @@ https://docs.newrelic.com/jp/docs/apm/agents/go-agent/installation/install-new-r
 - OS：MacOS Sequoia 15.1.1
 - Go：1.23.1
 
+▼ 今回のデモプロジェクトのリポジトリ
+
+https://github.com/Yuma-Satake/go-nr-test-app
 
 ### 1. ライセンスキーの発行
 
@@ -242,19 +246,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 #### ② NRの導入
 
-envファイルを作成し、ライセンスキーを設定
-
-```
-NEW_RELIC_LICENSE_KEY=YOUR_LICENSE_KEY
-```
-
 パッケージをインストール
 
 ```zsh
 go get github.com/newrelic/go-agent/v3/newrelic
 ```
 
-インストールしたパッケージを`import`するために、`main.go`に以下を追記
+インストールしたパッケージを import するために、`main.go`に以下を追記
 
 ```go
 import "github.com/newrelic/go-agent/v3/newrelic"
@@ -266,7 +264,7 @@ import "github.com/newrelic/go-agent/v3/newrelic"
 app, err := newrelic.NewApplication(
     newrelic.ConfigAppName("go-nr-test-app")
     newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY"))
-		newrelic.ConfigDistributedTracerEnabled(true),
+	newrelic.ConfigDistributedTracerEnabled(true),
 )
 if err != nil {
 	log.Fatal(err)
@@ -295,16 +293,16 @@ import (
 
 func main() {
 	log.Print("starting server...")
-  app, err := newrelic.NewApplication(
-      newrelic.ConfigAppName("go-nr-test-app"),
-      newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")),
-  		newrelic.ConfigDistributedTracerEnabled(true),
-  )
-  if err != nil {
-  	log.Fatal(err)
-  }
+	app, err := newrelic.NewApplication(
+		newrelic.ConfigAppName("go-nr-test-app"),
+		newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")),
+		newrelic.ConfigDistributedTracerEnabled(true),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  http.HandleFunc(newrelic.WrapHandleFunc(app, "/", handler))
+	http.HandleFunc(newrelic.WrapHandleFunc(app, "/", handler))
 
 	// Determine port for HTTP service.
 	port := os.Getenv("PORT")
@@ -327,4 +325,120 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, "Hello %s!\n", name)
 }
+
 ```
+
+`cloud run` にライセンスキーを環境変数として設定してデプロイ
+
+```zsh
+gcloud run deploy --set-env-vars NEW_RELIC_LICENSE_KEY=YOUR_LICENSE_KEY
+```
+
+エンドポイントにアクセスして、`Hello World`が表示される事を確認
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/27a2cc71-f226-b2ef-c1eb-76603304149d.png" />
+
+しばらくしてからNRにアクセスし、`All Entities`にアプリケーションが表示されていれば成功です！
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/e2b69161-6f81-62b1-b60c-84b9b4e47498.png" />
+
+`APM & Services`から、詳細を確認できます
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/01707520-9ca9-6009-9dfa-7c73f2750687.png" />
+
+### 3. ダッシュボードの確認
+せっかく表示できたので、初期設定のSummaryに何が表示されているのかについてざっくり見ていきます
+
+**[レイテシー]**：レスポンスに掛かっているレイテシーが確認できます。
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/f228ed74-b86e-158f-cf64-b3b78115c86e.png" />
+
+**[スループット]**：リクエストの数が確認できます。
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/bdfc15ac-cea7-a4c0-3ed5-225503eadf78.png" />
+
+**[エラー]**：発生しているエラーの数が確認できます。
+（雑にlocalhostからリクエスト飛ばしてCORSエラーを出してます）
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/87c6677e-2d1f-b119-dc81-1bf3dd6f160c.png" />
+
+**[トランザクション]**：どのエンドポイントがどれだけ呼ばれているかが確認できます。
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/f0f68c06-70af-bb27-25e2-a99872f8e29e.png" />
+
+**[Apdex Score]**：ユーザーの満足度を示す指標です。（1に近いほど満足度が高い）
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/65bf5e08-1cb1-66ec-ec69-c94c5140d516.png" />
+
+## New Relic の学習コンテンツ
+
+NR には、オブザーバビリティについて学ぶためのコンテンツや、実際のアプリケーションに導入する方法が多く用意されてます！
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/e46ebae6-c2cf-3422-3338-5713160295f4.png" />
+
+▼ 学生向けコンテンツ
+
+https://newrelic.com/jp/students/resources
+
+### 基本
+**[オブザーバビリティとは？]**
+オブザーバビリティってなーに？
+
+https://newrelic.com/jp/blog/best-practices/what-is-observability
+
+
+### とっつきやすいもの
+
+以下のコンテンツは私達が実際に使う際のユースケースに沿っていて、とっつきやすいです。
+
+**[Webサイトのパフォーマンスを向上する]**
+NRを使って、Webサイトのパフォーマンスを向上させる方法について、
+導入→観測→改善の一連が載ってます
+
+https://docs.newrelic.com/docs/tutorial-improve-site-performance/improve-website-performance/?_gl=1*ax2hbs*_gcl_au*MTkwNDczOTU4Mi4xNzMyNzY4ODkw*_ga*ODM5NzAxMzY0LjE3MzEwOTM3Mzc.*_ga_R5EF3MCG7B*MTczMjg1OTQwMS42LjEuMTczMjg2MTY4MS4xMS4xLjY0MDI4NjI5NA
+
+
+**[Next.jsアプリケーションの監視]**
+Next.jsアプリケーションに NR を導入する方法についての記事です
+
+https://newrelic.com/blog/how-to-relic/nextjs-monitor-application-data
+
+### 番外編
+
+[NR の清水さん](https://x.com/photographed)が過去に発表して下さった資料が、オブザーバビリティや、NRのコンセプトについて分かりやすかったので掲載。
+
+https://view-su2.highspot.com/viewer/4168b42cf1634b98d2fd7714b5c71f86
+
+## New Relic User Group Nagoya について
+
+私が NR に触れ始めたきっかけは、相方のむらさめと一緒に名古屋で `New Relic User Group Nagoya`（通称`ヌルグ`）を立ち上げたことです！！
+それまでは、オブザーバビリティについて全く触れる機会がなかったのですが、たまたま相方に誘われて立ち上げに関わり、NRを触り始めました。
+
+そんな`NRUG Nagoya`ですが、初回イベントを2024年10月に開催しました。
+引き続き、イベントを開催していく予定ですので、興味がある方はぜひご参加ください！
+（ぜひ社会人のユーザの方もご参加下さい）
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/fb6b4628-f59e-17a5-9b3f-750c86361dde.png" />
+
+▼ NRUG Connpass
+
+https://nrug-nagoya.connpass.com
+
+## 最後に
+
+私自身もまだ NR を使い始めたばかりで、巨大なプラットフォームである NR を使いきれている自信は全くありませんが、多くのエンジニアの方が NR を使って、オブザーバビリティやモニタリングを学んで下さればと思っております！
+
+## 資料
+
+
+https://x.com/yuma_satake22
+
+https://github.com/Yuma-Satake/go-nr-test-app
+
+https://newrelic.com/jp
+
+https://newrelic.com/jp/students
+
+https://docs.newrelic.com/jp/docs/apm/agents/go-agent/installation/install-new-relic-go/
+
+https://nrug-nagoya.connpass.com
