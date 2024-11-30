@@ -1,12 +1,14 @@
 ---
 title: 【PR-Agent】オラが村にもAIが来ただよ
 tags:
-  - 'AI'
-  - 'CI'
-private: true
-updated_at: ''
-id: null
-organization_url_name: null
+  - CI
+  - AI
+  - pr-agent
+  - アドベントカレンダー2024
+private: false
+updated_at: '2024-12-01T07:46:51+09:00'
+id: 2e39d66b663e2944f314
+organization_url_name: stech_official
 slide: false
 ignorePublish: false
 ---
@@ -206,6 +208,8 @@ pr_agent:walkthrough
 - **PR Reviewer Guide（PR上で確認すべき点を教えてくれる）**
 
 <img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/19ab2805-1894-5f9c-2a2c-27825c54a508.png" />
+
+他にもPRの内容についてhelpをする事ができたり、Codeのサジェストもしてくれます。
 
 ## Code Rabbitとの比較
 
