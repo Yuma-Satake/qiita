@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "preview": "npx qiita preview",
-    "pull": "npx qiita pull",
-    "qiita-login": "npx qiita login"
+    "preview": "pnpm qiita preview",
+    "pull": "pnpm qiita pull",
+    "qiita-login": "pnpm qiita login"
   },
   "devDependencies": {
     "@qiita/qiita-cli": "^1.6.1"
