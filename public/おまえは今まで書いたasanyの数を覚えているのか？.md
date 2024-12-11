@@ -6,7 +6,7 @@ tags:
   - 型システム
   - アドベントカレンダー2024
 private: true
-updated_at: '2024-12-11T18:05:12+09:00'
+updated_at: '2024-12-11T18:19:20+09:00'
 id: d56ecd79f2cbf26c0222
 organization_url_name: null
 slide: false
