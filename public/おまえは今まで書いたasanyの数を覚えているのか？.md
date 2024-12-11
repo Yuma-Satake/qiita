@@ -2,6 +2,9 @@
 title: 【TS初学者向け】おまえは今まで書いた as ◯◯ の数を覚えているのか？
 tags:
   - TypeScript
+-  - 初学者向け
+  - アドベントカレンダー2024
+  - 型システム
 private: true
 updated_at: '2024-12-11T16:55:14+09:00'
 id: d56ecd79f2cbf26c0222
@@ -124,8 +127,6 @@ https://typescriptbook.jp/reference/tsconfig/strict
 
 など
 
-
-
 `tsconfig.json`に以下のように記述することで有効になります。
 
 ```tsconfig.json
@@ -140,21 +141,52 @@ https://typescriptbook.jp/reference/tsconfig/strict
 
 ## Tips集
 
-以下に、８つのTips（基本的と思われる文法も含む）を紹介します。
+以下に、９つのTips（基本的と思われる文法も含む）を紹介します。
 
-### 型アノテーション
+### 型アノテーション（関数）
 
 本来、変数定義や、関数の帰り値における`: string`のような記述（型アノテーション）は必須ではなく、TypeScriptが推論を行い、型を自動で割り当ててくれます。
 
 しかし、関数のパラメータや返り値、変数宣言時に明示的な型アノテーションを行うことで、TypeScriptが推論に迷わず、as を使わない適切な記述を行えます。
 
 ```ts
-function getUserName(user: { name: string; age: number }): string {
-  return user.name;
+type CatFood = ['fish', 'milk'];
+type DogFood = ['bones'];
+type AnimalFood = CatFood | DogFood;
+
+// 型アノテーション無し
+function createAnimal(isDog: boolean) {
+  if (isDog) {
+    return ['bones'];
+  }
+  return ['fish', 'milk'];
 }
 
-const user = { name: "Alice", age: 25 }; 
-const userName: string = getUserName(user); 
+const rover: AnimalFood = createAnimal(true); // Error：string[] として推論されてしまい代入できない
+
+// 型アノテーション有り
+function createAnimalWithAnnotation(isDog: boolean): AnimalFood {
+  if (isDog) {
+    return ['bones'];
+  }
+  return ['fish', 'milk'];
+}
+
+const whiskers: AnimalFood = createAnimalWithAnnotation(false); // OK：AnimalFood として推論される
+```
+
+### 型アノテーション（テンプレートリテラル）
+
+テンプレートリテラル型に対しても、型アノテーションを使うことで、as を使わずに型安全な文字列リテラルを生成できます。
+
+```ts
+type PixelSize = `${number}px`;
+
+const getPixelSize = (size: number) => `${size}px`;
+const height: PixelSize = getPixelSize(10); // エラー：string として推論されてしまう
+
+const getPixelSizeWithAnnotation = (size: number): PixelSize => `${size}px`;
+const width: PixelSize = getPixelSizeWithAnnotation(10); // OK
 ```
 
 ### ユニオン型と型ガード
@@ -210,9 +242,9 @@ function makeSound(animal: Animal) {
 
 ### as const
 
-as const は型アサーションの一つですが、値をリテラル型に変換することができる、他の異なる記述です。
+as const は型アサーションの一つですが、値をリテラル型に変換することができる、特別な型アサーションです。
 
-定数的な値には as const を使用することで、後の推論においてリテラル型として扱われ、多くの場合でより上手く推論が行われるようになります。
+定数の値やオブジェクトに as const を使用することで、後の推論においてリテラル型として扱われ、多くの場合でより上手く推論が行われるようになります。
 
 ```ts
 const directions = ['north', 'east', 'south', 'west']; // string[] と推論される
@@ -263,30 +295,6 @@ const numValue = identity(42);      // T は number と推論
 ```
 
 このようにジェネリックスを使えば、戻り値に as を付けずとも適切な型が割り当てられます。
-
-### Enum ・ Discriminated Union 
-
-列挙型 (enum) や Discriminated Union（判別可能ユニオン）を活用することで、条件分岐内で型を明確化しやすくなります。Discriminated Unionはユニオン型に共通の tag プロパティ（または type プロパティ）を持たせることで、switch文やif文で明確に型を振り分けられます。
-
-```ts
-type Action = 
-  | { type: 'increment'; amount: number }
-  | { type: 'decrement'; amount: number };
-
-function reducer(state: number, action: Action): number {
-  switch (action.type) {
-    case 'increment':
-      return state + action.amount;
-    case 'decrement':
-      return state - action.amount;
-  }
-}
-
-const newState = reducer(0, { type: 'increment', amount: 5 }); 
-// action が 'increment' なら amount は number と推論され、 as 不要
-```
-
-このような判別可能ユニオンにより、as を使わずに確実な型判定と処理が行えます。
 
 ### テンプレートリテラル・ジェネリック
 
