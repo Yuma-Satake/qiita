@@ -39,9 +39,9 @@ TypeScriptを使う上で、as ◯◯ を少しだけ使わなくてもよくな
 
 `as ◯◯`とは、TypeScript において型をキャストするための記述です。
 
-- 値が特定の型だと分かっているが、上手く型が推論されない場合
-- 型が合わない場合に、型チェックをねじ伏せる場合
-- ライブラリの帰り値がanyで、その型を明示する場合
+- 値が特定の型だと分かっているが、上手く型が推論されない時
+- 型が合わない場合に、型チェックをねじ伏せる時
+- ライブラリの帰り値がanyで、その型を明示する時
 
 など、様々なケースで`as ◯◯`という記述をすることがあるかと思います。
 
@@ -54,14 +54,14 @@ https://typescriptbook.jp/reference/values-types-variables/type-assertion-as
 以下の例では、`unknown`型として宣言をした変数`num`を`as`を使ってそれぞれの型にキャストしています。
 
 ```ts
-/* unknown 型の変数として宣言 */
+// unknown 型の変数として宣言 
 const num: unknown = 1.1;
 
-/* num が number 型であることを示す */
+// num が number 型であることを示す 
 const num2 = num as number;
 num2.toFixed(); // 成功
 
-/* num が string 型であることを示す */
+// num が string 型であることを示す 
 const num3 = num as string;
 num3.toFixed(); // エラー：Property 'toFixed' does not exist on type 'string'
 ```
@@ -79,31 +79,41 @@ num3.toFixed(); // エラー：Property 'toFixed' does not exist on type 'string
 
 ### 例：nullをフィルターして、numberの配列にするケース
 
+#### asを使った場合
+
 ```ts
 const numbers: (number | null)[] = [1, 2, null, 4, null, 5];
 
-/* as を使って明示的にnumberの配列にする */
+// as を使って明示的にnumberの配列にする 
 const filteredNumbers = numbers.filter((num) => num !== null) as number[];
 ```
 
 ですが、実はこのようなケースは、`is`演算子を用いることで、`as`を使わずに書くことができます。
 
-### 例：nullをフィルターして、numberの配列にするケース（is演算子を使った場合）
+#### is演算子を使った場合
 
 ```ts
 const numbers: (number | null)[] = [1, 2, null, 4, null, 5];
 
-/* is を使って明示的にnumberの配列にする */
+// is を使って明示的にnumberの配列にする 
 const filteredNumbers = numbers.filter((num): num is number => num !== null);
 ```
 
 この記事では、このような`as ◯◯`少しだけ使わなくてもよくなる方法を紹介します。
+
+:::note
+TypeScript5.5 よりこの記述をしなくても、勝手にnullを除外してくれるようになりました。
+:::
 
 ## Tipsを見る前に
 
 TypeScriptにはコンパイルオプションとして、型推論を厳格にする`strict`モードや、それによって自動で有効になる`noImplicitAny` `strictNullChecks`などがあります。
 
 基本的にデフォルトで有効になっているため、あまり意識することはないかもしれませんが、これらのオプションを有効にすることで、より型安全なコードを書くことができます。
+
+▼ StrictModeについて（サバイバルTypeScript）
+
+https://typescriptbook.jp/reference/tsconfig/strict
 
 ### StrictMode
 以下のようなコンパイルオプションを一括で有効にし、型の安全性を高めるコンパイルオプションです。
@@ -114,9 +124,7 @@ TypeScriptにはコンパイルオプションとして、型推論を厳格に�
 
 など
 
-▼ StrictModeについて（サバイバルTypeScript）
 
-https://typescriptbook.jp/reference/tsconfig/strict
 
 `tsconfig.json`に以下のように記述することで有効になります。
 
@@ -128,21 +136,17 @@ https://typescriptbook.jp/reference/tsconfig/strict
 }
 ```
 
-これにより、曖昧な型状況が減り、コンパイラが潜在的な型不正を警告してくれるので、そもそも無駄な型ガードなどを書く機会が減ります。
+これにより、曖昧な型が推論される状況が減り、そもそも無駄に型ガードなどを書く機会が減ります。
 
 ## Tips集
 
 以下に、８つのTips（基本的と思われる文法も含む）を紹介します。
 
-### 明確な型アノテーション
+### 型アノテーション
 
 本来、変数定義や、関数の帰り値における`: string`のような記述（型アノテーション）は必須ではなく、TypeScriptが推論を行い、型を自動で割り当ててくれます。
 
 しかし、関数のパラメータや返り値、変数宣言時に明示的な型アノテーションを行うことで、TypeScriptが推論に迷わず、as を使わない適切な記述を行えます。
-
-:::note
-TypeScript5.5 よりこの記述をしなくても、勝手にnullを除外してくれるようになります。
-:::
 
 ```ts
 function getUserName(user: { name: string; age: number }): string {
@@ -153,7 +157,7 @@ const user = { name: "Alice", age: 25 };
 const userName: string = getUserName(user); 
 ```
 
-### ユニオン型と型ガードを組み合わせる
+### ユニオン型と型ガード
 
 ユニオン型とは`string | number`のように複数の型を組み合わせた型のことです。
 
@@ -165,18 +169,18 @@ type Animal = { type: 'cat'; meow: () => void } | { type: 'dog'; bark: () => voi
 
 function handleAnimal(animal: Animal) {
   if ('meow' in animal) {
-    /* ここで animal は meow を含む cat 型として推論される */
+    // ここで animal は meow を含む cat 型として推論される 
     animal.meow();
     return;
   }
-  /* ここでは dog 型として推論される */
+  // ここでは dog 型として推論される 
   animal.bark();
 }
 ```
 
 型ガードにより、animal の型が条件分岐内で確実に絞り込まれるため、as を使わずにメソッド呼び出しが可能です。
 
-### ユーザー定義型ガード関数を活用する
+### ユーザー定義型ガード関数
 
 本来、TypeScriptの型の絞り込みは関数のスコープ内に閉じてしまいますが、`is`を使ったユーザー定義型ガード関数を使うことで、関数外に型情報を持ち出すことができます。
 
@@ -193,18 +197,18 @@ function isCat(animal: Animal): animal is Cat {
 
 function makeSound(animal: Animal) {
   if (isCat(animal)) {
-    /* isCat により、このブロック内では animal は Cat と推論される */
+    // isCat により、このブロック内では animal は Cat と推論される 
     animal.meow();
     return
   } 
-  /* ここでは animal は Dog と推論 */
+  // ここでは animal は Dog と推論 
   animal.bark();  
 }
 ```
 
 ユーザー定義型ガードを活用することで、複雑なユニオン型の判別でも as を使わずに安全な型判定が可能になります。
 
-### as const の有効活用
+### as const
 
 as const は型アサーションの一つですが、値をリテラル型に変換することができる、他の異なる記述です。
 
@@ -222,7 +226,7 @@ move(directions[0]); // エラー：Argument of type 'string' is not assignable 
 move(strictDirections[0]); // OK
 ```
 
-### オーバーロードを使う
+### オーバーロード
 
 関数が引数によって返り値が異なる型を返す場合、関数シグネチャのオーバーロードを使うことで、呼び出し時点で適切な型を推論させられます。これにより、呼び出し側で as を使う必要がなくなります。
 
@@ -260,7 +264,7 @@ const numValue = identity(42);      // T は number と推論
 
 このようにジェネリックスを使えば、戻り値に as を付けずとも適切な型が割り当てられます。
 
-### Enumや Discriminated Union の積極的活用
+### Enum ・ Discriminated Union 
 
 列挙型 (enum) や Discriminated Union（判別可能ユニオン）を活用することで、条件分岐内で型を明確化しやすくなります。Discriminated Unionはユニオン型に共通の tag プロパティ（または type プロパティ）を持たせることで、switch文やif文で明確に型を振り分けられます。
 
@@ -284,25 +288,26 @@ const newState = reducer(0, { type: 'increment', amount: 5 });
 
 このような判別可能ユニオンにより、as を使わずに確実な型判定と処理が行えます。
 
-### 変数スコープ・再代入を避けて型推論を安定させる
+### テンプレートリテラル・ジェネリック
 
-同一の変数名に異なる型の値を代入するようなコードは、型推論が複雑になりがちです。変数のスコープや再代入パターンを最小限にすることで、型推論をシンプルに保ち、as に頼らずに済みます。
+ジェネリック型パラメータを活用した関数を導入することで、テンプレートリテラルでもasを回避できます。
 
 ```ts
-// 悪い 同じ変数名を用途ごとに使い分けると混乱を招く
-let data: unknown = fetchSomething();
-if (typeof data === 'string') {
-  // data は string として扱えるが、再代入で混乱発生
-  // 別の箇所では data が数値になっているかも？
+type AnimalType = 'cat' | 'dog' | 'bird';
+type EnvironmentType = 'forest' | 'desert' | 'ocean';
+
+function makeAnimalEnvironmentKey<A extends AnimalType, E extends EnvironmentType>(
+  animal: A,
+  environment: E
+): `${A}_${E}` {
+  return `${animal}_${environment}`;
 }
 
-// 良い スコープ毎に新たな変数で型を明確化
-const result = fetchSomething(); 
-if (typeof result === 'string') {
-  const text: string = result; // string と確定
-  // ここでは text は string なので as 不要
-}
+// 生成されたkeyは string にならず、"cat_forest" という文字列リテラル型になる
+const key = makeAnimalEnvironmentKey('cat', 'forest');
 ```
+
+文字列結合は型推論が上手くいかないがちですが、このようにジェネリック型パラメータを使うことで、as を使わずに型安全な文字列リテラルを生成できます。
 
 ## 最後に
 
