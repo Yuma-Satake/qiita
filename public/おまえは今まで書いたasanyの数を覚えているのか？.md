@@ -3,10 +3,10 @@ title: 【TS初学者向け】おまえは今まで書いた as ◯◯ の数を
 tags:
   - TypeScript
   - 初学者向け
-  - アドベントカレンダー2024
   - 型システム
+  - アドベントカレンダー2024
 private: true
-updated_at: '2024-12-11T17:26:18+09:00'
+updated_at: '2024-12-11T18:05:12+09:00'
 id: d56ecd79f2cbf26c0222
 organization_url_name: null
 slide: false
