@@ -1,11 +1,11 @@
 ---
 title: 【TS初学者向け】おまえは今まで書いた as ◯◯ の数を覚えているのか？
 tags:
-  - ''
+  - 'TypeScript'
 private: true
 updated_at: ''
 id: null
-organization_url_name: 'tskaigi'
+organization_url_name: ''
 slide: false
 ignorePublish: false
 ---
