@@ -1,14 +1,14 @@
 ---
 title: 【KC3Hack2025-勉強会資料】React×Supabase ぼくのかんがえた最速のWeb開発
 tags:
-  - 'Supabase'
-  - 'React'
-  - '初学者'
-  - 'フロントエンド'
-  - 'TypeScript'
+  - TypeScript
+  - フロントエンド
+  - React
+  - 初学者
+  - Supabase
 private: false
-updated_at: ''
-id: null
+updated_at: '2025-02-13T18:37:21+09:00'
+id: 599b34114c1e13f08bf6
 organization_url_name: null
 slide: false
 ignorePublish: false
