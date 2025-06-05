@@ -1,12 +1,12 @@
 ---
 title: 【登竜門Hack-共同開発講座】こんな共同開発は嫌だ 私がハッカソンで経験した失敗5選
 tags:
-  - '初学者'
-  - '共同開発'
-  - 'ハッカソン'
+  - ハッカソン
+  - 共同開発
+  - 初学者
 private: false
-updated_at: ''
-id: null
+updated_at: '2025-06-05T14:52:22+09:00'
+id: 5cb274551e20a81c455d
 organization_url_name: null
 slide: false
 ignorePublish: false
