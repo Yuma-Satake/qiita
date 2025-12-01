@@ -9,7 +9,7 @@
 新規作成
 
 ```zsh
-npx qiita new <title>
+pnpm qiita new <title>
 ```
 
 プレビュー

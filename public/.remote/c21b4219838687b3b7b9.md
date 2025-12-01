@@ -7,10 +7,10 @@ tags:
   - Claude
   - AI活用
 private: false
-updated_at: '2025-06-05T10:56:32+09:00'
+updated_at: '2025-06-05T21:37:12+09:00'
 id: c21b4219838687b3b7b9
 organization_url_name: null
-slide: false
+slide: true
 ignorePublish: false
 ---
 
@@ -84,14 +84,6 @@ ignorePublish: false
 **もう誰も初学者を採用してくれません😇** 
 
 実際に外資/国内問わず、エンジニアの新卒採用を停止している企業もあります。
-
-<br/>
-
-▼アメリカのソフトウェアエンジニア職の求人数
-
-![GsmCNghbwAA8yI1.jpeg](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/30778381-318c-4ea5-976f-378c30aa0cd5.jpeg)
-
-> 安野さんのツイート：https://x.com/takahiroanno/status/1930217472608842018
 
 ### 初学者はいない
 
