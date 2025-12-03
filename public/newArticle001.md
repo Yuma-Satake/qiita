@@ -4,7 +4,7 @@ tags:
   - React
   - Next.js
   - fsd
-private: true
+private: false
 updated_at: '2025-12-03T22:48:13+09:00'
 id: 0e9f62c6cf42d885e06c
 organization_url_name: null
