@@ -158,9 +158,9 @@ https://feature-sliced.design/docs/reference/slices-segments
 
 | セグメント | 役割 |
 |-----------|------|
-| ui/ | タグをチップとしてレンダリングする（UIコンポーネント、スタイル） |
-| model/ | 選択されたタグをクライアント上でステート管理する（データスキーマ、ストア、ビジネスロジック） |
-| api/ | 利用可能なタグを取得する（APIリクエスト関数、データ型） |
+| ui/ | UIコンポーネント、スタイル |
+| model/ | データスキーマ、ストア、ビジネスロジック |
+| api/ | APIリクエスト関数、データ型  |
 | lib/ | ヘルパー関数、ユーティリティ |
 | config/ | フィーチャーフラグ、定数 |
 
@@ -304,7 +304,7 @@ https://github.com/feature-sliced/steiger
 
 ```bash
 npm i -D steiger @feature-sliced/steiger-plugin
-npm steiger ./src
+npx steiger ./src
 ```
 
 #### 実際の出力例
