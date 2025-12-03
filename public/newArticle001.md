@@ -1,12 +1,12 @@
 ---
 title: 【Feature-Sliced Design】あの日みたディレクトリ構造の名前を僕達はまだ知らない。
 tags:
-  - 'FSD'
-  - 'React'
-  - 'Next.js'
+  - React
+  - Next.js
+  - fsd
 private: true
-updated_at: ''
-id: null
+updated_at: '2025-12-03T14:32:35+09:00'
+id: 0e9f62c6cf42d885e06c
 organization_url_name: null
 slide: false
 ignorePublish: false
