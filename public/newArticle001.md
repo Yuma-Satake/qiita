@@ -14,7 +14,7 @@ ignorePublish: false
 
 :::note
 [これは何]
-Feature-Sliced Design(FSD)というディレクトリ構造を、主流のFeature-basedと比較しながら解説したり、Next.jsでの実装例を紹介したりする記事です
+Feature-Sliced Design(FSD)というディレクトリ構造について解説し、Next.jsでの実装例とツール群を紹介する記事です
 :::
 
 :::note
@@ -59,9 +59,23 @@ FSDはフロントエンドにおけるアーキテクチャ設計の手法と�
 <blockquote class="twitter-tweet"><p lang="ja" dir="ltr">TSKaigi Hokuriku 2025のスポンサーLTで「フロントエンドアーキテクチャの設計方法論 Feature-Sliced Designの紹介」を発表しました！ <a href="https://t.co/tv3Hff5x5X">https://t.co/tv3Hff5x5X</a></p>&mdash; Sakamoto Keisuke (@motikoma) <a href="https://twitter.com/motikoma/status/1992442100428996895?ref_src=twsrc%5Etfw">November 23, 2025</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 ちょうど業務委託先で「Feature Based ディレクトリ構成って何が嬉しくて〜」みたいなことを言語化していため、興味を持ちました。
+
 この記事では、FSDの概要と、Feature Based ディレクトリ構成との比較、Next.jsでの実装例を紹介します。
 
-## FSDの基本概念
+## FSDを採用すると何が嬉しいの？
+
+公式ドキュメントでは幾つかの利点が挙げられていますが、個人的には以下の**2点**が特に嬉しいと感じました
+
+### ① 影響範囲がわかりやすくなって嬉しい
+
+FSDではレイヤーの依存方向を一方通行に制限し、変更に対する予期しない箇所への影響を防ぐことができます。
+
+### ② コードの均一化ができて嬉しい
+
+後述のFeature Basedとの比較でも触れますが、FSDでは実装をどこに配置するかが明確に定義されており、かつそれを検証するツールも提供されています。
+そのため、何をどこに実装すれば良いかが明確になり、コードベースの均一化が目指せます。
+
+## FSDの概念
 
 以下のドキュメントをベースにしながら説明していきます。
 （FSDはコミュニティ主導のオープンソースのプロジェクトであり、そこで公開されているドキュメントです）
@@ -70,131 +84,105 @@ https://feature-sliced.design
 
 ### Layer（レイヤー）
 
-FSDでは以下の6つのレイヤーを定義しています。
-ポイントは**上位レイヤーは下位レイヤーのみを参照できる**という点です。逆方向や同一レイヤー間の参照は禁止されています。
+FSDでは以下の6つの`Layer`を定義しています。
+
+ポイントは**上位レイヤーは下位レイヤーのみを参照できる**という点です。
+逆方向や同一レイヤー間の参照は禁止されています。
 
 | レイヤー | 責務 | 呼び出し❌ | 呼び出し✅ |
 |---------|------|:----:|:----:|
-| app | アプリ全体の初期化（ルーティング、グローバルストア、providers） | | ↓ |
+| app | アプリ全体の初期化（Routing、Providers） | | ↓ |
 | pages | URLに対応する画面単位 | ↑ | ↓ |
 | widgets | 大きな自己完結型UIブロック（Header、Sidebar等） | ↑ | ↓ |
 | features | ユーザーインタラクション（form、API呼び出し等） | ↑ | ↓ |
 | entities | ビジネスエンティティ（User、Product等のドメインモデル） | ↑ | ↓ |
 | shared | アプリ全体で共有される基盤（ui、utils、types） | ↑ | |
 
+この分割が最初の利点で言及した「影響範囲がわかりやすくなる」や「コードの均一化」に繋がっています。
+
 #### 備考
 
-- 全てのレイヤーを使う必要はなく、最小構成は**app、pages、shared**の3つが最小構成
-- 上位のレイヤーからであれば、間のレイヤーを飛び越えて参照しても問題ありません（例：pagesからentitiesを参照）
+- 全てのレイヤーを使う必要はなく、最小構成はapp、pages、sharedの3つが最小構成
+- 上位のレイヤーからであれば、間のレイヤーを飛び越えて参照しても問題ない（例：pagesからentitiesを参照）
 
 ### Slice（スライス）
 
-Sliceは**ビジネスドメインによるコードの分割単位**です。
-例えばECサイトなら`user`、`product`、`cart`、`order`といったスライスに分かれます。
+`Slice`は公式ドキュメントでは**ビジネスドメインによるコードの分割単位**と表現されていますが、実際には**アプリケーションにとっての意味単位での分割**と捉えた方がわかりやすいと考えています。
 
-```
-features/
-├── auth/          # 認証に関する機能
-├── cart/          # カートに関する機能
-└── checkout/      # 決済に関する機能
-```
+各レイヤーでの分割基準は以下のようになります：
 
-重要なルールとして、**同一レイヤー内の他のSliceを直接参照できません**。
-これにより各スライスは低結合・高凝集を維持できます。
+- **pages** → ページ単位（home、dashboard等）
+- **widgets** → UIブロック単位（header、sidebar等）
+- **features** → 機能単位（auth、cart等）
+- **entities** → エンティティ単位（user、product等）
 
-### Segment（セグメント）
-
-各Slice内は**Segments**で技術的目的ごとに分割されます。
-
-| セグメント | 役割 |
-|-----------|------|
-| ui/ | UIコンポーネント、スタイル |
-| model/ | データスキーマ、ストア、ビジネスロジック |
-| api/ | APIリクエスト関数、データ型 |
-| lib/ | ヘルパー関数、ユーティリティ |
-| config/ | フィーチャーフラグ、定数 |
-
-セグメント名は**目的（why）を表すべき**とされています。
-`components`や`hooks`ではなく`ui`や`model`を使うのがFSD流です。
-
-### Public API
-
-各Sliceは`index.ts`（バレルファイル）で**Public API**を定義し、外部に公開するインターフェースを明示します。
-
-```typescript
-// features/auth/index.ts
-export { LoginForm } from './ui/LoginForm';
-export { useAuth } from './model/hooks';
-export type { AuthState } from './model/types';
-```
-
-これにより内部実装を隠蔽し、リファクタリングの自由度を確保できます。
-外部からは`import { LoginForm } from '@/features/auth'`のようにアクセスします。
-
-## Feature Basedとの比較
-Next.jsでよく使われるFeature Basedディレクトリ構成とFSDを比較してみましょう。
-
-### Feature Basedディレクトリ構成
-
-Feature Basedは機能単位でディレクトリを分割する考え方です。
-一般的には以下のような構成になります。
+Sliceはそれぞれのレイヤーの下に配置されます。ただし、`app`と`shared`はSliceを持たず、直接Segmentを配置します。
 
 ```
 src/
+├── app/                # Sliceなし（直接Segmentを持つ）
+├── pages/
+│   ├── home/           # Slice
+│   └── dashboard/      # Slice
+├── widgets/
+│   ├── header/         # Slice
+│   └── sidebar/        # Slice
 ├── features/
-│   ├── auth/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   └── api/
-│   └── user/
-│       ├── components/
-│       ├── hooks/
-│       └── api/
-├── components/     # 共通コンポーネント
-├── hooks/          # 共通hooks
-└── utils/          # ユーティリティ
+│   ├── auth/           # Slice
+│   └── cart/           # Slice
+├── entities/
+│   ├── user/           # Slice
+│   └── product/        # Slice
+└── shared/             # Sliceなし（直接Segmentを持つ）
 ```
 
-Feature Basedの良い点は**直感的で学習コストが低い**ことです。
-「この機能に関するコードはこのフォルダ」というシンプルなルールで運用できます。
+ルールとして、**同一レイヤー内の他のSliceを直接参照できません**。
+これにより各スライスは低結合、高凝集を維持できます。
 
-### FSDとの違い
+#### Public API Rule と バレルエクスポートについて
 
-| 観点 | Feature Based | FSD |
-|------|---------------|-----|
-| レイヤーの概念 | なし（フラット） | 6層の階層構造 |
-| 依存関係のルール | 暗黙的 | 上位→下位のみ（厳密） |
-| 共通コンポーネント | `components/`に配置 | `shared/ui/`に配置 |
-| ページコンポーネント | `pages/`または`features/`内 | `pages/`レイヤーに明確に分離 |
-| ウィジェット（複合UI） | 明確な置き場がない | `widgets/`レイヤー |
-| ツールによる検証 | なし | ESLint config、Steiger |
+FSDでは各Sliceに`index.ts`（バレルファイル）を配置し、これをPublic APIとして定義し、カプセル化することが推奨されています。
 
-最大の違いは**依存関係のルールが明文化されているかどうか**です。
+https://feature-sliced.design/docs/reference/slices-segments
 
-Feature Basedでは「featureAからfeatureBを参照していいのか？」という問いに対する明確な答えがありません。
-FSDでは「同一レイヤー間の参照は禁止」というルールがあり、ツールで自動検証できます。
+しかし、Next.jsにおいてバレルエクスポートはパフォーマンス上の問題を引き起こす可能性があることが知られています。
+そのため個人的には、FSDの設計思想は理解しつつも、この辺りは実プロジェクトで採用する際に考慮し、`index.ts`を廃止して直接インポートするようにしてもいいのかなと考えています。
 
-### どちらを選ぶべきか
+### Segment（セグメント）
 
-| プロジェクト規模 | 推奨 |
-|-----------------|------|
-| 小規模（数画面） | Feature Based |
-| 中規模 | どちらでも可（チームの習熟度次第） |
-| 大規模・長期運用 | FSD |
+各Slice内は**Segments**を技術的な視点で以下のように分割します。
 
-FSDは学習コストがかかりますが、**大規模プロジェクトでの保守性とスケーラビリティ**に優れています。
-逆に小規模プロジェクトではオーバーヘッドがメリットを上回る可能性があります。
+セグメント名は**目的を表すべき**とされており、例えば`components`や`hooks`ではなく`ui`や`model`を使うべきとされています。
 
-## Next.jsでの実装例
+| セグメント | 役割 |
+|-----------|------|
+| ui/ | タグをチップとしてレンダリングする（UIコンポーネント、スタイル） |
+| model/ | 選択されたタグをクライアント上でステート管理する（データスキーマ、ストア、ビジネスロジック） |
+| api/ | 利用可能なタグを取得する（APIリクエスト関数、データ型） |
+| lib/ | ヘルパー関数、ユーティリティ |
+| config/ | フィーチャーフラグ、定数 |
 
-Next.js App RouterとFSDを組み合わせる場合、`app`と`pages`というフォルダ名が競合します。
-公式推奨の解決策は以下の構造です。
+公式ドキュメント中の説明の例では、以下のようなタグのリストをSegmentとして分割しています。
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/900b272d-3846-4e8c-bff6-63f621d9b757.png" />
+
+- **api/** →  利用可能なタグを取得する
+- **ui/** → タグをチップとしてレンダリングする
+- **model/** →  選択されたタグをクライアント上でステート管理する
+
+## Next.js App Routerでの実装例
+
+Next.js App RouterとFSDを組み合わせる場合の基本的な構成を紹介します
+
+https://feature-sliced.design/docs/guides/tech/with-nextjs
+
+### 基本的なディレクトリ構成
 
 ```
 project-root/
 ├── app/                    # Next.js App Router
 │   ├── dashboard/
-│   │   └── page.tsx        # FSD pagesから再エクスポート
+│   │   └── page.tsx
 │   └── layout.tsx
 └── src/
     ├── app/                # FSD appレイヤー
@@ -210,6 +198,10 @@ project-root/
     ├── entities/
     └── shared/
 ```
+
+Next.jsの`app/`フォルダはルーティングのみを担当し、FSDの各レイヤーは`src/`配下に配置します。
+
+### 再エクスポートによる連携
 
 Next.jsのルートファイルからFSDのpagesをインポート・再エクスポートします。
 
@@ -244,12 +236,24 @@ export const DashboardPage = () => {
 
 このように、Next.jsのルーティング機構とFSDのレイヤー構造を分離することで、両方のメリットを活かせます。
 
-### バレルエクスポートについて
+### フォルダ名の競合問題
 
-FSDでは各SliceにPublic APIとして`index.ts`（バレルファイル）を配置することが推奨されています。
-しかし、Next.jsにおいてバレルエクスポートはパフォーマンス上の問題を引き起こす可能性があることが知られています
+Next.jsの`app`や`pages`というフォルダ名がFSDのレイヤー名と競合します。
+FSD公式では以下の対策が推奨されています。
 
-個人的には、FSDの設計思想は理解しつつも、この辺りは実プロジェクトで採用する際に考慮し、`index.ts`を廃止して直接インポートするようにしてもいいのかなと考えています。
+- FSDのレイヤーは`src/`配下に配置する
+- プロジェクトルートに空の`pages/`フォルダを配置する（Next.jsが`src/pages`をPages Routerとして認識するのを防ぐため）
+
+```
+project-root/
+├── app/                    # Next.js App Router
+├── pages/                  # 空フォルダ（README.mdのみ）
+│   └── README.md
+└── src/
+    ├── app/                # FSD appレイヤー
+    ├── pages/              # FSD pagesレイヤー
+    └── ...
+```
 
 ## ツールチェーン
 
@@ -257,10 +261,12 @@ FSDには思想を実際の実装に落とし込むために、コードベー�
 
 ### ESLint Rules
 
-`@feature-sliced/eslint-config`はESLintのルールとして、FSDのルールに沿って依存関係をチェックしてくれます
+`@feature-sliced/eslint-config`はESLintのルールとして、FSDのルールに沿って依存関係をチェックしてくれます。
 
 https://github.com/feature-sliced/eslint-config
 
+※現時点でESLint v9のフラットコンフィグに対応していないため、ESLint v8を使用する必要があります
+※Biomeで同様のルールを提供するプラグインを探しましたが、現時点では見つかりませんでした
 
 #### 導入
 
@@ -274,9 +280,21 @@ npm install -D @feature-sliced/eslint-config eslint-plugin-import eslint-plugin-
 }
 ```
 
+#### 実際の出力例
+
+以下のように、FSDのルールに違反している場合にエラーが表示されます。
+
+> "shared" is not allowed to import "features" | See rules: https://feature-sliced.design/docs/reference/layers/overview eslintboundaries/element-types
+
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/4764eebb-23da-4757-bcf5-8ba8c51a7680.png" />
+
+
+
 ### Steiger
 
-`steiger`は2024年に公開されたFSD専用のアーキテクチャリンターです。ESLintとは異なり、ファイル・フォルダ構造自体を検証します。
+`steiger`はFSD用のアーキテクチャリンターです。
+ESLintとは異なり、ファイル・フォルダ構造自体を検証します。
 
 https://github.com/feature-sliced/steiger
 
@@ -287,29 +305,45 @@ npm i -D steiger @feature-sliced/steiger-plugin
 npm steiger ./src
 ```
 
-## フロントエンドカンファレンス名古屋について
+#### 実際の出力例
 
-2026/5/9 にフロントエンドカンファレンス名古屋を開催します！
-名古屋では初のフロカンになるので、ぜひNoteを見て頂けると嬉しいです🦘
+> ┌ src/shared/ui/BadComponent.tsx
+✘ Forbidden import from higher layer "features".
+│
+└ fsd/forbidden-imports
 
-https://note.com/fec_nagoya/n/ncf091310bc4f
+↑ sharedレイヤーから上位レイヤーであるfeaturesをインポートしているため、エラーが出ています。
+
+> ┌ src/entities/user
+✘ This slice has only one reference in slice "widgets/header". Consider merging them.
+│
+└ fsd/insignificant-slice
+
+↑ entities/userスライスがwidgets/headerからしか参照されていないため、統合を検討するよう提案されています。
+
+<img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/78850ef0-c03a-4598-a102-2bfe8e48ab9b.png" />
 
 ## 最後に
 
-Feature-Sliced Designは、フロントエンドの大規模化に伴う構造的な複雑性を制御するための方法論です。
+普段は Feature Based ディレクトリを採用しているプロジェクトに関わっていることが多いですが、コードベースをドメインベースに整理する思想は共通している上で、それを明確にルールやツールでサポートしている点はFSDの魅力だと感じました。
 
-- 6つのレイヤーで責務を明確に分離
-- Slice（ビジネスドメイン）とSegment（技術的目的）による二軸の分割
-- Public APIによるカプセル化
-- ツールによる依存関係の自動検証
+一方で学習コストは高く、またNext.jsとの組み合わせにおいては少し面倒な部分もあるため、プロジェクトの規模やチームのメンバーの状況に応じて採用を検討するのが良いと感じました。
 
-Feature Basedと比較すると学習コストは高いですが、**依存関係の明確化**と**ツールによる自動検証**という点で大きなアドバンテージがあります。
+## フロントエンドカンファレンス名古屋について
 
-「なんとなくFeature Basedっぽい構成にしている」というチームは、一度FSDの考え方を学んでみると新しい発見があるかもしれません。
+2026年5月9日（土） にフロントエンドカンファレンス名古屋を開催します！
+名古屋では初のフロカンになるので、ぜひWatchしてください🦘
+
+https://note.com/fec_nagoya/n/ncf091310bc4f
+
 
 ## 資料
 
 https://feature-sliced.design/
+
+https://feature-sliced.design/docs/reference/slices-segments
+
+https://feature-sliced.design/docs/guides/tech/with-nextjs
 
 https://speakerdeck.com/motikoma/tskaigi-hokuriku-2025-hurontoentoakitekutiyanoshe-ji-fang-fa-lun-feature-sliced-designnoshao-jie
 

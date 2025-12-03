@@ -51,3 +51,4 @@ ignorePublish: false
 
 - main/masterブランチへのpushで自動公開
 - `QIITA_TOKEN` シークレットの設定が必要
+- 「思います」は「考えています」と書くようにして
