@@ -39,7 +39,7 @@ Feature-Sliced Design(FSD)というディレクトリ構造について解説し
 
 フロントエンドカンファレンス名古屋を立ち上げました！
 ▼是非ウォッチして下さい！
-[【開催決定！】フロントエンドカンファレン名古屋2026 を開催します🎉](https://note.com/fec_nagoya/n/ncf091310bc4f)
+[【開催決定！】フロントエンドカンファレンス名古屋2026 を開催します🎉](https://note.com/fec_nagoya/n/ncf091310bc4f)
 
 <img width="400px" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/8023873b-51e7-47df-af88-212bc45c2985.png" />
 
@@ -58,7 +58,7 @@ FSDはフロントエンドにおけるアーキテクチャ設計の手法と�
 
 <blockquote class="twitter-tweet"><p lang="ja" dir="ltr">TSKaigi Hokuriku 2025のスポンサーLTで「フロントエンドアーキテクチャの設計方法論 Feature-Sliced Designの紹介」を発表しました！ <a href="https://t.co/tv3Hff5x5X">https://t.co/tv3Hff5x5X</a></p>&mdash; Sakamoto Keisuke (@motikoma) <a href="https://twitter.com/motikoma/status/1992442100428996895?ref_src=twsrc%5Etfw">November 23, 2025</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-ちょうど業務委託先で「Feature Based ディレクトリ構成って何が嬉しくて〜」みたいなことを言語化していため、興味を持ちました。
+ちょうど業務委託先で「Feature Based ディレクトリ構成って何が嬉しくて〜」みたいなことを言語化していたため、興味を持ちました。
 
 この記事では、FSDの概要と、Feature Based ディレクトリ構成との比較、Next.jsでの実装例を紹介します。
 
@@ -99,6 +99,8 @@ FSDでは以下の6つの`Layer`を定義しています。
 | shared | アプリ全体で共有される基盤（ui、utils、types） | ↑ | |
 
 この分割が最初の利点で言及した「影響範囲がわかりやすくなる」や「コードの均一化」に繋がっています。
+
+※`processes`レイヤーは非推奨になっているため言及せず、6つのレイヤーとして説明します
 
 #### 備考
 
@@ -335,7 +337,6 @@ npm steiger ./src
 名古屋では初のフロカンになるので、ぜひWatchしてください🦘
 
 https://note.com/fec_nagoya/n/ncf091310bc4f
-
 
 ## 資料
 
