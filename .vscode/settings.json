@@ -1,5 +1,5 @@
 {
-  "extensions.ignoreRecommendations": false,
+  "extensions.ignoreRecommendations": true,
   "cSpell.words": ["qiita"],
   "editor.formatOnSave": false
 }
