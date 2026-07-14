@@ -12,6 +12,8 @@ id: c21b4219838687b3b7b9
 organization_url_name: null
 slide: true
 ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 
 :::note

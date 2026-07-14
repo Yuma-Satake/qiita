@@ -8,6 +8,8 @@ id: 030f2b973ec321abe07a
 organization_url_name: null
 slide: false
 ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 
 :::note

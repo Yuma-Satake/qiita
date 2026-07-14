@@ -11,6 +11,8 @@ id: 2e39d66b663e2944f314
 organization_url_name: stech_official
 slide: false
 ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 
 :::note

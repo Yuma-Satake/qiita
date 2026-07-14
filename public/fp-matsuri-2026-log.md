@@ -4,11 +4,13 @@ tags:
   - カンファレンス
   - 関数型プログラミング
 private: false
-updated_at: ''
-id: null
+updated_at: '2026-07-14T21:08:08+09:00'
+id: 6eef10954c039cd48b9e
 organization_url_name: null
 slide: false
 ignorePublish: false
+posting_campaign_uuid: null
+agreed_posting_campaign_term: false
 ---
 
 :::note
