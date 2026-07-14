@@ -110,8 +110,6 @@ Haskellのようにサポートしている言語も、完全な形ではなく�
 
 <img width="400px" alt="HKTセッション登壇風景" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/7b352e90-5296-4be3-9a12-e33d2340e60f.jpeg"/>
 
-<img width="400px" alt="HKTセッション多相型モチベーションスライド" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/bfc10315-791b-458f-b6e5-c73ee5d7146b.jpeg"/>
-
 ### Welcome to the "Parametricity" 🏙 − Generic だけど Specific な世界 −
 
 https://fortee.jp/2026fp-matsuri/proposal/310a9a71-f65b-4ad1-a6d6-81878923cfb3
