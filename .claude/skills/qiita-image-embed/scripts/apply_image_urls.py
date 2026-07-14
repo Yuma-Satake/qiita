@@ -2,7 +2,7 @@
 """
 Qiitaエディタが自動生成した `![ファイル名](url)` 形式の行を受け取り、
 記事内の `<!-- 画像アップロード待ち: ファイル名 -->` プレースホルダーを
-実際の画像Markdownに置き換える。
+実際の画像タグに置き換える。
 
 使い方:
     python3 apply_image_urls.py <記事ファイルパス> <URL一覧を書いたファイルパス>
@@ -11,7 +11,8 @@ URL一覧ファイルの中身の例:
     ![GenServerアクター移行スライド.jpg](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/xxxx.jpeg)
     ![Nixパッケージマネージャースライド.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2740071/yyyy.png)
 
-一致したプレースホルダーは `![ファイル名(拡張子なし)](url)` に置換される。
+一致したプレースホルダーは `<img width="400px" alt="ファイル名(拡張子なし)" src="url"/>` に置換される。
+これはこのリポジトリの既存記事群が採用している画像埋め込み形式に合わせたもの。
 一致しなかった行・使われなかったプレースホルダーは標準出力に警告として出す。
 """
 import re
@@ -63,7 +64,7 @@ def main() -> int:
             unmatched_pairs.append((name, url))
             continue
 
-        replacement = f"![{stem(name)}]({url})"
+        replacement = f'<img width="400px" alt="{stem(name)}" src="{url}"/>'
         article_text = article_text.replace(placeholders[target_key], replacement, 1)
         matched.append((target_key, name, url))
         del placeholders[target_key]
